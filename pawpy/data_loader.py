@@ -4,6 +4,7 @@
 # >>>>>>>>>>>>>>>>>>>>>>> #
 
 import os
+import numpy as np
 import pandas as pd
 from tensorflow.keras.preprocessing import image
 
@@ -33,6 +34,7 @@ class DataLoader:
                                 for c in self.base_df.columns]
         self.target_df = __gen_target_df__(self.base_df)
         self.img_dir = os.path.join(data_dir, mode)
+        self.n_img = self.target_df.shape[0]
         
     def image_batcher(self, valid_frac=0.1, pre_proc_args=None,
                       target_pix=224, batch_size=5, sub_sample=None):
@@ -47,6 +49,8 @@ class DataLoader:
         if sub_sample is None:
             flow_df = self.target_df
         else:
+            if sub_sample < 1:
+                sub_sample = int(np.round(sub_sample*self.n_img))
             flow_df = self.target_df.sample(sub_sample)
         
         flow_args = {
