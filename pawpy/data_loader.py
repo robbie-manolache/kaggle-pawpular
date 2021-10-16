@@ -5,16 +5,16 @@
 
 import os
 import pandas as pd
+from tensorflow.keras.preprocessing import image
 
 def __gen_target_df__(df):
     """
     """
     tgt_df = df.copy()[["id", "pawpularity"]]
-    tgt_df.columns = ["id", "label"]
+    tgt_df.columns = ["id", "target"]
     tgt_df.loc[:, "id"] = tgt_df["id"] + ".jpg"
     
     return tgt_df
-
 
 class DataLoader:
     
@@ -33,7 +33,37 @@ class DataLoader:
                                 for c in self.base_df.columns]
         self.target_df = __gen_target_df__(self.base_df)
         self.img_dir = os.path.join(data_dir, mode)
-        self.img_set = None
         
+    def image_batcher(self, valid_frac=0.1, pre_proc_args=None,
+                      target_pix=224, batch_size=5, sub_sample=None):
+        """
+        """
         
+        data_gen = image.ImageDataGenerator(
+            validation_split=valid_frac,
+            **pre_proc_args
+        )
+        
+        if sub_sample is None:
+            flow_df = self.target_df
+        else:
+            flow_df = self.target_df.sample(sub_sample)
+        
+        flow_args = {
+            "dataframe": flow_df,
+            "directory": self.img_dir,
+            "x_col": "id",
+            "y_col": "target",
+            "batch_size": batch_size,
+            "target_size": (target_pix, target_pix),
+            "class_mode": "raw",
+            "shuffle": True,
+            "seed": 42
+        }
+        
+        if valid_frac > 0:
+            return (data_gen.flow_from_dataframe(**flow_args, subset="training"),
+                    data_gen.flow_from_dataframe(**flow_args, subset="validation"))
+        else:
+            return data_gen.flow_from_dataframe(**flow_args)
         
