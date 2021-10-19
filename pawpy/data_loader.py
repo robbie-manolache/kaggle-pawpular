@@ -12,7 +12,6 @@ def __gen_target_df__(df):
     """
     """
     tgt_df = df.copy()[["id", "pawpularity"]]
-    tgt_df.columns = ["id", "target"]
     tgt_df.loc[:, "id"] = tgt_df["id"] + ".jpg"
     
     return tgt_df
@@ -36,8 +35,8 @@ class DataLoader:
         self.img_dir = os.path.join(data_dir, mode)
         self.n_img = self.target_df.shape[0]
         
-    def image_batcher(self, valid_frac=0.1, pre_proc_args=None,
-                      target_pix=224, batch_size=5, sub_sample=None):
+    def image_df_batcher(self, valid_frac=0.1, pre_proc_args=None,
+                         target_pix=224, batch_size=5, sub_sample=None):
         """
         """
         
@@ -57,7 +56,7 @@ class DataLoader:
             "dataframe": flow_df,
             "directory": self.img_dir,
             "x_col": "id",
-            "y_col": "target",
+            "y_col": "pawpularity",
             "batch_size": batch_size,
             "target_size": (target_pix, target_pix),
             "class_mode": "raw",
