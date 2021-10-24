@@ -7,6 +7,7 @@ import os
 import numpy as np
 import pandas as pd
 from tensorflow.keras.preprocessing import image
+from sklearn.model_selection import train_test_split
 
 def __gen_target_df__(df):
     """
@@ -34,6 +35,13 @@ class DataLoader:
         self.target_df = __gen_target_df__(self.base_df)
         self.img_dir = os.path.join(data_dir, mode)
         self.n_img = self.target_df.shape[0]
+    
+    def valid_split(self, valid_frac=0.1, seed=42):
+        """
+        """
+        self.train_df, self.valid_df = train_test_split(self.base_df,
+                                                        test_size=valid_frac,
+                                                        random_state=seed)
         
     def image_df_batcher(self, valid_frac=0.1, pre_proc_args=None,
                          target_pix=224, batch_size=5, sub_sample=None):
