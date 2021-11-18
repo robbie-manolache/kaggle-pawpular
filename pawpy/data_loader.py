@@ -9,6 +9,15 @@ import pandas as pd
 from tensorflow.keras.preprocessing import image
 from sklearn.model_selection import train_test_split
 
+def __load_base_df__(data_dir, mode):
+    """
+    """
+    df = pd.read_csv(os.path.join(data_dir, "%s.csv"%mode))
+    if mode == "test":
+        df.loc[:, "pawpularity"] = -1    
+        
+    return df
+
 def __gen_target_df__(df):
     """
     """
@@ -29,7 +38,7 @@ class DataLoader:
         
         # set attributes
         self.data_dir = data_dir
-        self.base_df = pd.read_csv(os.path.join(data_dir, "%s.csv"%mode))
+        self.base_df = __load_base_df__(data_dir, mode)
         self.base_df.columns = [c.lower().replace(" ", "_") 
                                 for c in self.base_df.columns]
         self.target_df = __gen_target_df__(self.base_df)
