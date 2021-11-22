@@ -53,7 +53,8 @@ class DataLoader:
                                                         random_state=seed)
         
     def image_df_batcher(self, valid_frac=0.1, pre_proc_args=None,
-                         target_pix=224, batch_size=5, sub_sample=None):
+                         target_pix=224, batch_size=5, 
+                         sub_sample=None, seed=42):
         """
         """
         
@@ -67,7 +68,7 @@ class DataLoader:
         else:
             if sub_sample < 1:
                 sub_sample = int(np.round(sub_sample*self.n_img))
-            flow_df = self.target_df.sample(sub_sample)
+            flow_df = self.target_df.sample(sub_sample, random_state=seed)
         
         flow_args = {
             "dataframe": flow_df,
@@ -78,7 +79,7 @@ class DataLoader:
             "target_size": (target_pix, target_pix),
             "class_mode": "raw",
             "shuffle": True,
-            "seed": 42
+            "seed": seed
         }
         
         if valid_frac > 0:
