@@ -32,6 +32,8 @@ def nn_interpreter(model, config):
 
         # plot each filter's weights as a heatmap
         for i in range(params["conv"]["nf"]):
+            if params["conv"]["nf"] == 1:
+                ax = [ax]
             mat = post_conv_wb[0][:, :, 0, i]
             sns.heatmap(mat, ax=ax[i], cmap="coolwarm", annot=True,
                         vmin=vmin, vmax=vmax, cbar=False)
