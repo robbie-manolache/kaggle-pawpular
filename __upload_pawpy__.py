@@ -18,7 +18,7 @@ else:
                          "PetFinder.my Pawpularity Contest")
 
 # get package file name
-file_name = "pawpy-0.3.1-py3-none-any.whl"
+file_name = "pawpy-0.4.0-py3-none-any.whl"
 
 # copy source file to destination    
 shutil.copy2(os.path.join("dist", file_name), 
@@ -27,4 +27,4 @@ shutil.copy2(os.path.join("dist", file_name),
 # upload to Kaggle datasets
 upload_dataset(dst_dir,
                new_version=True,
-               version_notes="fix minor bug in NN inspector")
+               version_notes="new functions for extra features")

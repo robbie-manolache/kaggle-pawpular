@@ -6,8 +6,10 @@
 import os
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 from tensorflow.keras.preprocessing import image
 from sklearn.model_selection import train_test_split
+from pawpy.feat_eng import compute_img_stats
 
 def __load_base_df__(data_dir, mode):
     """
@@ -44,6 +46,23 @@ class DataLoader:
         self.target_df = __gen_target_df__(self.base_df)
         self.img_dir = os.path.join(data_dir, mode)
         self.n_img = self.target_df.shape[0]
+    
+    def gen_extra_features(self, load_path=None, save_path=None):
+        """
+        """
+        
+        if load_path is None:
+            img_stats = []
+            for img_id in tqdm(self.base_df["id"].values):
+                img_stats.append(compute_img_stats(img_id, self.img_dir))
+            new_df = pd.DataFrame(img_stats)
+        else:
+            new_df = pd.read_csv(load_path)
+        
+        if save_path is not None:
+            new_df.to_csv(save_path, index=False)
+        
+        self.base_df = self.base_df.merge(new_df, on="id")
     
     def valid_split(self, valid_frac=0.1, seed=42):
         """

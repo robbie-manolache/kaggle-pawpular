@@ -4,5 +4,5 @@
 from setuptools import setup
 
 setup(name="pawpy", 
-      version="0.3.1", 
+      version="0.4.0", 
       packages=['pawpy', 'pawpy/helpers'])
