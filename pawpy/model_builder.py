@@ -6,6 +6,7 @@
 import tensorflow as tf
 import tensorflow.keras.layers as kl
 import tensorflow.keras.regularizers as kreg
+import tensorflow.keras.initializers as kini
     
 def build_NN_model(config, model_map):
     """
@@ -49,13 +50,19 @@ def build_NN_model(config, model_map):
         all_x = kl.Conv2D(
             filters=params["conv"]["nf"], 
             kernel_size=d[:2], strides=d[:2], name="post_conv2D",
-            kernel_regularizer=kreg.l2(params["conv"]["l2"])
+            kernel_regularizer=kreg.l2(params["conv"]["l2"]),
+            kernel_initializer=kini.RandomUniform(
+                minval=1/((d[0]+1)*(d[1]+1)),
+                maxval=1/((d[0]-1)*(d[1]-1))
+            )
         )(all_x)
         all_x = kl.Flatten()(all_x)
     else:
         all_x = kl.GlobalAvgPool2D()(img_x)
 
-    # add tabular features and then dropout    
+    # add tabular features and then dropout
+    if config["batch_norm"]:
+        all_x = kl.BatchNormalization()(all_x)    
     all_x = kl.Concatenate()([all_x, x_in])
     all_x = kl.Dropout(params["drop"])(all_x)
 
