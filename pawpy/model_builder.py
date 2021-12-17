@@ -68,11 +68,26 @@ def build_NN_model(config, model_map):
 
     # additional dense layer
     if config["extra_dense"]:
+        
         all_x = kl.Dense(
-            params["xtra"]["n"], activation="relu", 
-            kernel_regularizer=kreg.l2(params["xtra"]["l2"]), 
+            params["xtra"]["n"], 
+            activation="linear", 
+            kernel_regularizer=kreg.l1_l2(l1=params["xtra"]["l1"],
+                                          l2=params["xtra"]["l2"]), 
             name="extra_dense"
         )(all_x)
+        
+        if params["xtra"]["acti"] == "relu":
+            all_x = kl.LeakyReLU(alpha=params["xtra"]["relu_alpha"])(all_x)
+        elif params["xtra"]["acti"] == "elu":
+            all_x = kl.ELU()(all_x)
+        elif params["xtra"]["acti"] == "prelu":
+            all_x = kl.PReLU()(all_x)    
+        else: # for sigmoid and tanh
+            if params["xtra"]["acti"] != "linear":
+                all_x = kl.Activation(params["xtra"]["acti"])(all_x)  
+            else:
+                pass
 
     # final output layer
     all_x = kl.Dense(
